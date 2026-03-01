@@ -1,5 +1,4 @@
-import { useState, type FormEvent, type KeyboardEvent } from 'react';
-import { Button } from '@/components/ui';
+import { useState, useRef, type FormEvent, type KeyboardEvent } from 'react';
 import { Send, Smile, Paperclip } from 'lucide-react';
 import { cn } from '@/utils/cn';
 
@@ -11,6 +10,7 @@ interface MessageInputProps {
 
 export function MessageInput({ onSend, onTyping, disabled }: MessageInputProps) {
     const [content, setContent] = useState('');
+    const textareaRef = useRef<HTMLTextAreaElement>(null);
 
     const handleSubmit = (e?: FormEvent) => {
         e?.preventDefault();
@@ -18,6 +18,9 @@ export function MessageInput({ onSend, onTyping, disabled }: MessageInputProps) 
         if (!trimmed) return;
         onSend(trimmed);
         setContent('');
+        if (textareaRef.current) {
+            textareaRef.current.style.height = '44px';
+        }
     };
 
     const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
@@ -32,48 +35,72 @@ export function MessageInput({ onSend, onTyping, disabled }: MessageInputProps) 
         onTyping();
     };
 
+    const autoResize = () => {
+        if (textareaRef.current) {
+            textareaRef.current.style.height = '44px';
+            textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 120)}px`;
+        }
+    };
+
     return (
-        <div className="border-t border-white/[0.06] bg-slate-900/80 backdrop-blur-lg p-3">
+        <div className="shrink-0 glass-strong"
+            style={{
+                padding: '10px 12px',
+                paddingBottom: 'calc(10px + var(--safe-area-bottom))',
+                borderTop: '1px solid var(--border-subtle)',
+            }}
+        >
             <form onSubmit={handleSubmit} className="flex items-end gap-2">
-                {/* Attachment button */}
+                {/* Attachment */}
                 <button
                     type="button"
-                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-white/40 hover:text-white/60 hover:bg-white/5 transition-all"
+                    className="flex h-[44px] w-[44px] shrink-0 items-center justify-center rounded-xl transition-all duration-150 active:scale-95"
+                    style={{ color: 'var(--text-muted)' }}
                     title="Attach file"
                 >
                     <Paperclip className="h-5 w-5" />
                 </button>
 
-                {/* Text input */}
-                <div className="relative flex-1">
+                {/* Input container */}
+                <div className="relative flex-1 min-w-0">
                     <textarea
+                        ref={textareaRef}
                         id="message-input"
                         value={content}
-                        onChange={(e) => handleChange(e.target.value)}
+                        onChange={(e) => {
+                            handleChange(e.target.value);
+                            autoResize();
+                        }}
                         onKeyDown={handleKeyDown}
                         placeholder="Type a message..."
                         disabled={disabled}
                         rows={1}
                         className={cn(
-                            'w-full resize-none rounded-2xl border border-white/10 bg-white/5 px-4 py-2.5 pr-10 text-sm text-white placeholder:text-white/30',
-                            'focus:outline-none focus:ring-2 focus:ring-emerald-500/40 focus:border-emerald-500/40 focus:bg-white/[0.07]',
-                            'max-h-32 transition-all duration-200',
-                            'disabled:opacity-50 disabled:cursor-not-allowed',
+                            'w-full resize-none rounded-2xl px-4 py-3 pr-11 text-sm',
+                            'focus:outline-none focus:ring-2',
+                            'disabled:opacity-40 disabled:cursor-not-allowed',
+                            'transition-all duration-200',
                         )}
                         style={{
-                            height: 'auto',
-                            minHeight: '2.75rem',
-                            maxHeight: '8rem',
-                        }}
-                        onInput={(e) => {
-                            const target = e.target as HTMLTextAreaElement;
-                            target.style.height = 'auto';
-                            target.style.height = `${Math.min(target.scrollHeight, 128)}px`;
-                        }}
+                            backgroundColor: 'rgba(255,255,255,0.04)',
+                            border: '1px solid var(--border-subtle)',
+                            color: 'var(--text-primary)',
+                            height: '44px',
+                            minHeight: '44px',
+                            maxHeight: '120px',
+                            lineHeight: '1.4',
+                            overflow: 'hidden',
+                            overflowY: content.split('\n').length > 2 ? 'auto' : 'hidden',
+                            scrollbarWidth: 'none',
+                            msOverflowStyle: 'none',
+                            WebkitOverflowScrolling: 'touch',
+                            '--tw-ring-color': 'var(--border-active)',
+                        } as React.CSSProperties}
                     />
                     <button
                         type="button"
-                        className="absolute right-3 bottom-2.5 text-white/30 hover:text-white/50 transition-colors"
+                        className="absolute right-3 bottom-[10px] transition-colors active:scale-95"
+                        style={{ color: 'var(--text-muted)' }}
                         title="Emoji"
                     >
                         <Smile className="h-5 w-5" />
@@ -81,19 +108,24 @@ export function MessageInput({ onSend, onTyping, disabled }: MessageInputProps) 
                 </div>
 
                 {/* Send button */}
-                <Button
+                <button
                     type="submit"
-                    size="icon"
                     disabled={disabled || !content.trim()}
                     className={cn(
-                        'shrink-0 rounded-full h-10 w-10 transition-all duration-200',
-                        content.trim()
-                            ? 'bg-emerald-600 hover:bg-emerald-700 shadow-lg shadow-emerald-500/25 scale-100'
-                            : 'bg-white/10 hover:bg-white/15 scale-95',
+                        'flex h-[44px] w-[44px] shrink-0 items-center justify-center rounded-full transition-all duration-200 active:scale-90',
+                        'disabled:opacity-30 disabled:cursor-not-allowed',
                     )}
+                    style={{
+                        background: content.trim()
+                            ? `linear-gradient(135deg, var(--accent-gradient-from), var(--accent-gradient-to))`
+                            : 'rgba(255,255,255,0.06)',
+                        color: content.trim() ? '#fff' : 'var(--text-muted)',
+                        boxShadow: content.trim() ? `0 4px 12px var(--active-gradient-from)` : 'none',
+                        transform: content.trim() ? 'scale(1)' : 'scale(0.92)',
+                    }}
                 >
-                    <Send className="h-4 w-4" />
-                </Button>
+                    <Send className="h-[1.1rem] w-[1.1rem]" />
+                </button>
             </form>
         </div>
     );

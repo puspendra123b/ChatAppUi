@@ -33,14 +33,17 @@ export function ChatLayout() {
     };
 
     return (
-        <div className="flex h-screen w-full overflow-hidden bg-slate-950">
+        <div className="flex h-screen h-[100dvh] w-full overflow-hidden" style={{ backgroundColor: 'var(--bg-primary)' }}>
             {/* Sidebar */}
             <aside
                 className={cn(
-                    'h-full shrink-0 transition-all duration-300 ease-in-out',
+                    'h-full shrink-0 transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]',
                     isMobile
-                        ? cn('absolute inset-y-0 left-0 z-30 w-full', showSidebar ? 'translate-x-0' : '-translate-x-full')
-                        : 'relative w-80 xl:w-96',
+                        ? cn(
+                            'fixed inset-y-0 left-0 z-30 w-full',
+                            showSidebar ? 'translate-x-0' : '-translate-x-full',
+                        )
+                        : 'relative w-80 lg:w-[22rem] xl:w-96',
                 )}
             >
                 <Sidebar onConversationSelect={handleConversationSelect} />
@@ -49,8 +52,8 @@ export function ChatLayout() {
             {/* Chat area */}
             <main
                 className={cn(
-                    'relative flex-1 h-full transition-all duration-300 ease-in-out',
-                    isMobile && showSidebar ? 'hidden' : 'block',
+                    'relative flex-1 h-full transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]',
+                    isMobile && showSidebar ? 'hidden' : 'flex',
                 )}
             >
                 <ChatView onBack={isMobile ? handleBack : undefined} />
