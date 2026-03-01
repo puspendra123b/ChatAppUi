@@ -60,7 +60,17 @@ apiClient.interceptors.response.use(
         const originalRequest = error.config as RetryableConfig | undefined;
 
         // Only attempt refresh on 401, and only once per request
-        if (error.response?.status === 401 && originalRequest && !originalRequest._retry) {
+        // Skip refresh for the refresh endpoint itself and login/signup endpoints
+        const isAuthEndpoint = originalRequest?.url?.includes('/auth/refresh') ||
+            originalRequest?.url?.includes('/auth/login') ||
+            originalRequest?.url?.includes('/auth/signup');
+
+        if (
+            error.response?.status === 401 &&
+            originalRequest &&
+            !originalRequest._retry &&
+            !isAuthEndpoint
+        ) {
             if (isRefreshing) {
                 // Queue the request until refresh completes
                 return new Promise((resolve, reject) => {
@@ -85,16 +95,17 @@ apiClient.interceptors.response.use(
                     throw new Error('No refresh token available');
                 }
 
+                // Use a raw axios call (not apiClient) to avoid interceptor loops
                 const { data } = await axios.post(`${config.api.baseUrl}/auth/refresh`, {
                     refreshToken,
                 });
 
-                const newAccessToken = data.tokens.accessToken as string;
-                tokenStore.setAccessToken(newAccessToken);
+                // Backend returns: { success, message, data: { accessToken, refreshToken } }
+                const newAccessToken = data.data.accessToken as string;
+                const newRefreshToken = data.data.refreshToken as string;
 
-                if (data.tokens.refreshToken) {
-                    tokenStore.setRefreshToken(data.tokens.refreshToken as string);
-                }
+                tokenStore.setAccessToken(newAccessToken);
+                tokenStore.setRefreshToken(newRefreshToken);
 
                 processQueue(null, newAccessToken);
 

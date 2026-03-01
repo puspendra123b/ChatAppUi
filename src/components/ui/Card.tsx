@@ -5,15 +5,21 @@ interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
     variant?: 'default' | 'glass';
 }
 
-export function Card({ className, variant = 'default', children, ...props }: CardProps) {
+export function Card({ className, variant = 'default', children, style, ...props }: CardProps) {
     return (
         <div
             className={cn(
-                'rounded-2xl border transition-all duration-200',
-                variant === 'default' && 'border-white/10 bg-slate-800/80',
-                variant === 'glass' && 'border-white/10 bg-white/5 backdrop-blur-xl',
+                'rounded-3xl transition-all duration-300',
+                variant === 'glass' && 'glass',
                 className,
             )}
+            style={{
+                ...(variant === 'default' ? {
+                    backgroundColor: 'var(--bg-elevated)',
+                    border: '1px solid var(--border-subtle)',
+                } : {}),
+                ...style,
+            }}
             {...props}
         >
             {children}
@@ -23,7 +29,7 @@ export function Card({ className, variant = 'default', children, ...props }: Car
 
 export function CardHeader({ className, children, ...props }: React.HTMLAttributes<HTMLDivElement>) {
     return (
-        <div className={cn('flex flex-col space-y-1.5 p-6', className)} {...props}>
+        <div className={cn('flex flex-col space-y-2 p-6 sm:p-8', className)} {...props}>
             {children}
         </div>
     );
@@ -31,7 +37,11 @@ export function CardHeader({ className, children, ...props }: React.HTMLAttribut
 
 export function CardTitle({ className, children, ...props }: React.HTMLAttributes<HTMLHeadingElement>) {
     return (
-        <h3 className={cn('text-2xl font-bold tracking-tight text-white', className)} {...props}>
+        <h3
+            className={cn('text-2xl sm:text-3xl font-extrabold tracking-tight', className)}
+            style={{ color: 'var(--text-primary)' }}
+            {...props}
+        >
             {children}
         </h3>
     );
@@ -39,7 +49,7 @@ export function CardTitle({ className, children, ...props }: React.HTMLAttribute
 
 export function CardDescription({ className, children, ...props }: React.HTMLAttributes<HTMLParagraphElement>) {
     return (
-        <p className={cn('text-sm text-white/50', className)} {...props}>
+        <p className={cn('text-sm', className)} style={{ color: 'var(--text-secondary)' }} {...props}>
             {children}
         </p>
     );
@@ -47,7 +57,7 @@ export function CardDescription({ className, children, ...props }: React.HTMLAtt
 
 export function CardContent({ className, children, ...props }: React.HTMLAttributes<HTMLDivElement>) {
     return (
-        <div className={cn('p-6 pt-0', className)} {...props}>
+        <div className={cn('p-6 pt-0 sm:p-8 sm:pt-0', className)} {...props}>
             {children}
         </div>
     );
@@ -55,7 +65,7 @@ export function CardContent({ className, children, ...props }: React.HTMLAttribu
 
 export function CardFooter({ className, children, ...props }: React.HTMLAttributes<HTMLDivElement>) {
     return (
-        <div className={cn('flex items-center p-6 pt-0', className)} {...props}>
+        <div className={cn('flex items-center p-6 pt-0 sm:p-8 sm:pt-0', className)} {...props}>
             {children}
         </div>
     );
