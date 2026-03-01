@@ -43,12 +43,13 @@ export function RegisterPage() {
         try {
             await sendOtp({ email, purpose: 'signup' });
             setOtpSent(true);
-            setStep('otp');
             setCountdown(60);
             // Focus first OTP input
             setTimeout(() => otpRefs.current[0]?.focus(), 100);
         } catch {
             // Error handled by store
+        } finally {
+            setStep('otp');
         }
     };
 
