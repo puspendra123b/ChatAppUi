@@ -107,7 +107,6 @@ export function ChatView({ onBack }: ChatViewProps) {
 
   return (
     <div className="flex h-full w-full min-w-0 flex-col overflow-hidden" style={{ backgroundColor: 'var(--bg-primary)' }}>
-    <div className="flex h-full w-full flex-col" style={{ backgroundColor: 'var(--bg-primary)' }}>
       {/* ── Chat Header ─────────────────────────────── */}
       <header className="flex items-center gap-3 glass-strong px-4 py-3 shrink-0"
         style={{ paddingTop: 'calc(var(--safe-area-top) + 0.75rem)' }}

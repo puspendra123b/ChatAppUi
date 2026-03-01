@@ -8,7 +8,6 @@ export function ProtectedRoute() {
     if (isInitialising) {
         return (
             <div className="flex h-full items-center justify-center" style={{ backgroundColor: 'var(--bg-primary)' }}>
-            <div className="flex h-screen h-[100dvh] items-center justify-center" style={{ backgroundColor: 'var(--bg-primary)' }}>
                 <div className="flex flex-col items-center gap-5 animate-slide-up">
                     <div className="relative">
                         <div className="h-14 w-14 rounded-2xl flex items-center justify-center shadow-lg"
@@ -40,7 +39,6 @@ export function PublicOnlyRoute() {
     if (isInitialising) {
         return (
             <div className="flex h-full items-center justify-center" style={{ backgroundColor: 'var(--bg-primary)' }}>
-            <div className="flex h-screen h-[100dvh] items-center justify-center" style={{ backgroundColor: 'var(--bg-primary)' }}>
                 <div className="relative">
                     <div className="h-14 w-14 rounded-2xl flex items-center justify-center shadow-lg"
                         style={{
@@ -52,7 +50,6 @@ export function PublicOnlyRoute() {
                     <div className="absolute inset-0 h-14 w-14 rounded-2xl animate-ping opacity-20"
                         style={{ background: `linear-gradient(135deg, var(--accent-gradient-from), var(--accent-gradient-to))` }} />
                 </div>
-
             </div>
         );
     }
