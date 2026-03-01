@@ -1,6 +1,13 @@
 import { create } from 'zustand';
 import axios from 'axios';
-import type { User, LoginCredentials, RegisterCredentials, ApiResponse } from '@/types';
+import type {
+    User,
+    LoginCredentials,
+    RegisterCredentials,
+    SendOtpPayload,
+    VerifyOtpPayload,
+    ApiResponse,
+} from '@/types';
 import { apiClient, tokenStore } from '@/services/api';
 import { config } from '@/config';
 import { wsService } from '@/services/websocket';
@@ -19,6 +26,9 @@ interface AuthState {
 
     login: (credentials: LoginCredentials) => Promise<void>;
     register: (credentials: RegisterCredentials) => Promise<void>;
+    sendOtp: (payload: SendOtpPayload) => Promise<void>;
+    verifyOtp: (payload: VerifyOtpPayload) => Promise<{ otpToken?: string }>;
+    loginWithOtp: (payload: VerifyOtpPayload) => Promise<void>;
     logout: () => void;
     initialise: () => Promise<void>;
     clearError: () => void;
@@ -31,6 +41,7 @@ export const useAuthStore = create<AuthState>((set) => ({
     isInitialising: true,
     error: null,
 
+    // ── Password Login ──────────────────────────────────────
     login: async (credentials) => {
         set({ isLoading: true, error: null });
         try {
@@ -38,13 +49,11 @@ export const useAuthStore = create<AuthState>((set) => ({
             tokenStore.setAccessToken(res.data.accessToken);
             tokenStore.setRefreshToken(res.data.refreshToken);
 
-            // Fetch full user profile after login
             let user: User | null = null;
             try {
                 const { data: meRes } = await apiClient.get<ApiResponse<{ user: User }>>('/user/me');
                 user = meRes.data.user;
             } catch {
-                // Fallback user from credentials
                 user = {
                     _id: 'self',
                     userId: '',
@@ -65,19 +74,46 @@ export const useAuthStore = create<AuthState>((set) => ({
         }
     },
 
-    register: async (credentials) => {
+    // ── Send OTP ────────────────────────────────────────────
+    sendOtp: async (payload) => {
         set({ isLoading: true, error: null });
         try {
-            // Signup endpoint: POST /api/auth/signup → { data: { email, userId } }
-            await apiClient.post<ApiResponse<{ email: string; userId: string }>>('/auth/signup', credentials);
+            await apiClient.post<ApiResponse<{ email: string }>>('/auth/send-otp', payload);
+            set({ isLoading: false });
+        } catch (err: unknown) {
+            const message =
+                err && typeof err === 'object' && 'message' in err
+                    ? (err as { message: string }).message
+                    : 'Failed to send OTP';
+            set({ error: message, isLoading: false });
+            throw err;
+        }
+    },
 
-            // After signup, auto-login
-            const { data: loginRes } = await apiClient.post<ApiResponse<AuthTokensResponse>>('/auth/login', {
-                username: credentials.email,
-                password: credentials.password,
-            });
-            tokenStore.setAccessToken(loginRes.data.accessToken);
-            tokenStore.setRefreshToken(loginRes.data.refreshToken);
+    // ── Verify OTP (for signup — returns otpToken) ──────────
+    verifyOtp: async (payload) => {
+        set({ isLoading: true, error: null });
+        try {
+            const { data: res } = await apiClient.post<ApiResponse<{ email: string; otpToken: string }>>('/auth/verify-otp', payload);
+            set({ isLoading: false });
+            return { otpToken: res.data.otpToken };
+        } catch (err: unknown) {
+            const message =
+                err && typeof err === 'object' && 'message' in err
+                    ? (err as { message: string }).message
+                    : 'OTP verification failed';
+            set({ error: message, isLoading: false });
+            throw err;
+        }
+    },
+
+    // ── Login with OTP (verify OTP → get tokens) ────────────
+    loginWithOtp: async (payload) => {
+        set({ isLoading: true, error: null });
+        try {
+            const { data: res } = await apiClient.post<ApiResponse<AuthTokensResponse>>('/auth/verify-otp', payload);
+            tokenStore.setAccessToken(res.data.accessToken);
+            tokenStore.setRefreshToken(res.data.refreshToken);
 
             let user: User | null = null;
             try {
@@ -87,6 +123,39 @@ export const useAuthStore = create<AuthState>((set) => ({
                 user = {
                     _id: 'self',
                     userId: '',
+                    email: payload.email,
+                    isOnline: true,
+                };
+            }
+
+            set({ user, isAuthenticated: true, isLoading: false });
+            wsService.connect();
+        } catch (err: unknown) {
+            const message =
+                err && typeof err === 'object' && 'message' in err
+                    ? (err as { message: string }).message
+                    : 'OTP login failed';
+            set({ error: message, isLoading: false });
+            throw err;
+        }
+    },
+
+    // ── Register (with OTP token) ───────────────────────────
+    register: async (credentials) => {
+        set({ isLoading: true, error: null });
+        try {
+            const { data: res } = await apiClient.post<ApiResponse<AuthTokensResponse & { email: string; userId: string }>>('/auth/signup', credentials);
+            tokenStore.setAccessToken(res.data.accessToken);
+            tokenStore.setRefreshToken(res.data.refreshToken);
+
+            let user: User | null = null;
+            try {
+                const { data: meRes } = await apiClient.get<ApiResponse<{ user: User }>>('/user/me');
+                user = meRes.data.user;
+            } catch {
+                user = {
+                    _id: 'self',
+                    userId: res.data.userId || '',
                     email: credentials.email,
                     isOnline: true,
                 };
@@ -104,19 +173,14 @@ export const useAuthStore = create<AuthState>((set) => ({
         }
     },
 
+    // ── Logout ──────────────────────────────────────────────
     logout: () => {
         wsService.disconnect();
         tokenStore.clearAll();
         set({ user: null, isAuthenticated: false, error: null });
     },
 
-    /**
-     * Sticky session initialisation:
-     * 1. Check if a refresh token exists in localStorage
-     * 2. Call /auth/refresh to get a fresh access token
-     * 3. Use the new access token to fetch the user profile
-     * 4. If refresh fails → clear tokens and stay logged out
-     */
+    // ── Initialise (sticky session via refresh token) ───────
     initialise: async () => {
         const refreshToken = tokenStore.getRefreshToken();
         if (!refreshToken) {
@@ -125,8 +189,6 @@ export const useAuthStore = create<AuthState>((set) => ({
         }
 
         try {
-            // Step 1: Use the refresh token to get a fresh access token
-            // Use raw axios (not apiClient) to avoid interceptor triggering
             const { data: refreshRes } = await axios.post(
                 `${config.api.baseUrl}/auth/refresh`,
                 { refreshToken },
@@ -138,12 +200,10 @@ export const useAuthStore = create<AuthState>((set) => ({
             tokenStore.setAccessToken(newAccessToken);
             tokenStore.setRefreshToken(newRefreshToken);
 
-            // Step 2: Fetch the user profile with the fresh access token
             const { data: meRes } = await apiClient.get<ApiResponse<{ user: User }>>('/user/me');
             set({ user: meRes.data.user, isAuthenticated: true, isInitialising: false });
             wsService.connect();
         } catch {
-            // Refresh failed — token is expired or invalid, clear everything
             tokenStore.clearAll();
             set({ isInitialising: false });
         }

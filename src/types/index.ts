@@ -21,6 +21,18 @@ export interface LoginCredentials {
 export interface RegisterCredentials {
     email: string;
     password: string;
+    otpToken: string;     // verification token from OTP flow
+}
+
+export interface SendOtpPayload {
+    email: string;
+    purpose: 'signup' | 'login';
+}
+
+export interface VerifyOtpPayload {
+    email: string;
+    code: string;
+    purpose: 'signup' | 'login';
 }
 
 /** Shape: { success, message, data: { accessToken, refreshToken } } */
