@@ -7,7 +7,7 @@ export function ProtectedRoute() {
 
     if (isInitialising) {
         return (
-            <div className="flex h-screen h-[100dvh] items-center justify-center" style={{ backgroundColor: 'var(--bg-primary)' }}>
+            <div className="flex h-full items-center justify-center" style={{ backgroundColor: 'var(--bg-primary)' }}>
                 <div className="flex flex-col items-center gap-5 animate-slide-up">
                     <div className="relative">
                         <div className="h-14 w-14 rounded-2xl flex items-center justify-center shadow-lg"
@@ -23,6 +23,7 @@ export function ProtectedRoute() {
                     <p className="text-sm font-medium animate-pulse" style={{ color: 'var(--text-muted)' }}>
                         Loading your vybe...
                     </p>
+
                 </div>
             </div>
         );
@@ -37,7 +38,7 @@ export function PublicOnlyRoute() {
 
     if (isInitialising) {
         return (
-            <div className="flex h-screen h-[100dvh] items-center justify-center" style={{ backgroundColor: 'var(--bg-primary)' }}>
+            <div className="flex h-full items-center justify-center" style={{ backgroundColor: 'var(--bg-primary)' }}>
                 <div className="relative">
                     <div className="h-14 w-14 rounded-2xl flex items-center justify-center shadow-lg"
                         style={{

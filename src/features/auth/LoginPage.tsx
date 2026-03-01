@@ -21,10 +21,11 @@ export function LoginPage() {
     };
 
     return (
-        <div className="relative flex min-h-screen min-h-[100dvh] items-center justify-center p-4 sm:p-6 overflow-hidden"
+        <div className="relative flex min-h-full items-center justify-center p-4 sm:p-6 overflow-hidden"
             style={{ backgroundColor: 'var(--bg-primary)' }}
         >
             {/* Animated background blobs */}
+
             <div className="pointer-events-none fixed inset-0 overflow-hidden">
                 <div className="absolute -top-32 -left-32 h-64 w-64 sm:h-96 sm:w-96 rounded-full blur-[100px] animate-blob"
                     style={{ backgroundColor: 'var(--blob-color-1)' }} />

@@ -31,7 +31,7 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
             if (this.props.fallback) return this.props.fallback;
 
             return (
-                <div className="flex h-screen h-[100dvh] w-full items-center justify-center p-6"
+                <div className="flex h-full w-full items-center justify-center p-6"
                     style={{ backgroundColor: 'var(--bg-primary)' }}
                 >
                     <div className="max-w-sm text-center space-y-5 animate-slide-up">

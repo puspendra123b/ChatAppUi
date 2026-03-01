@@ -33,7 +33,7 @@ export function ChatLayout() {
     };
 
     return (
-        <div className="flex h-screen h-[100dvh] w-full overflow-hidden" style={{ backgroundColor: 'var(--bg-primary)' }}>
+        <div className="flex h-full w-full overflow-hidden" style={{ backgroundColor: 'var(--bg-primary)' }}>
             {/* Sidebar */}
             <aside
                 className={cn(
@@ -52,7 +52,7 @@ export function ChatLayout() {
             {/* Chat area */}
             <main
                 className={cn(
-                    'relative flex-1 h-full transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]',
+                    'relative flex-1 min-w-0 h-full overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]',
                     isMobile && showSidebar ? 'hidden' : 'flex',
                 )}
             >
