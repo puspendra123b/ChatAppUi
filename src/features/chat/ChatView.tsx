@@ -104,9 +104,17 @@ export function ChatView({ onBack }: ChatViewProps) {
   }
 
   return (
+<<<<<<< Updated upstream
     <div className="flex h-full flex-col bg-slate-950">
       {/* ── Chat Header ────────────────────────────────── */}
       <header className="flex items-center gap-3 border-b border-white/[0.06] bg-slate-900/80 backdrop-blur-lg px-4 py-3 shrink-0">
+=======
+    <div className="flex h-full w-full min-w-0 flex-col overflow-hidden" style={{ backgroundColor: 'var(--bg-primary)' }}>
+      {/* ── Chat Header ─────────────────────────────── */}
+      <header className="flex items-center gap-3 glass-strong px-4 py-3 shrink-0"
+        style={{ paddingTop: 'calc(var(--safe-area-top) + 0.75rem)' }}
+      >
+>>>>>>> Stashed changes
         {onBack && (
           <button
             onClick={onBack}
@@ -156,6 +164,7 @@ export function ChatView({ onBack }: ChatViewProps) {
       <div
         ref={scrollRef}
         onScroll={handleScroll}
+<<<<<<< Updated upstream
         className="flex-1 overflow-y-auto py-4 scrollbar-thin"
         style={{
           backgroundImage: `
@@ -163,6 +172,9 @@ export function ChatView({ onBack }: ChatViewProps) {
             radial-gradient(circle at 80% 20%, rgba(20, 184, 166, 0.03) 0%, transparent 50%)
           `,
         }}
+=======
+        className="flex-1 overflow-y-auto overflow-x-hidden py-4 scrollbar-thin"
+>>>>>>> Stashed changes
       >
         {isLoadingMessages ? (
           <div className="space-y-3">

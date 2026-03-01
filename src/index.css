@@ -17,17 +17,37 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
+<<<<<<< Updated upstream
+=======
+    -webkit-tap-highlight-color: transparent;
+    scroll-behavior: smooth;
+    overflow: hidden;
+>>>>>>> Stashed changes
   }
 
   body {
     background-color: #020617;
     color: #ffffff;
     overflow: hidden;
+<<<<<<< Updated upstream
     min-height: 100vh;
   }
 
   #root {
     min-height: 100vh;
+=======
+    /* Fixed positioning fills exactly the visible viewport on mobile */
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  #root {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+>>>>>>> Stashed changes
   }
 
   /* Custom scrollbar */

@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import type { Chat, Message, User, ApiResponse, WSSendDirectPayload, WSMessageAck } from '@/types';
 import { apiClient } from '@/services/api';
 import { wsService } from '@/services/websocket';
+import { playSentSound, playReceivedSound } from '@/utils/sounds';
 
 interface ChatState {
     // State
@@ -170,6 +171,9 @@ export const useChatStore = create<ChatState>((set, get) => ({
 
         const payload: WSSendDirectPayload = { chatId, content, clientMessageId };
         wsService.send('SEND_DIRECT_MESSAGE', payload);
+
+        // Play sent sound 🔊
+        playSentSound();
     },
 
     sendTyping: (chatId, isTyping) => {
@@ -181,6 +185,9 @@ export const useChatStore = create<ChatState>((set, get) => ({
         set((state) => {
             const existing = state.messages[chatId] || [];
             if (existing.some((m) => m._id === message._id)) return state;
+
+            // Play received sound 🔊
+            playReceivedSound();
 
             return {
                 messages: {

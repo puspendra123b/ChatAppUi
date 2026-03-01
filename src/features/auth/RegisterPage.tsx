@@ -38,7 +38,14 @@ export function RegisterPage() {
     const displayError = validationError || error;
 
     return (
+<<<<<<< Updated upstream
         <div className="flex min-h-screen items-center justify-center bg-slate-950 p-4">
+=======
+        <div className="relative flex min-h-full items-center justify-center p-4 sm:p-6 overflow-hidden"
+            style={{ backgroundColor: 'var(--bg-primary)' }}
+        >
+            {/* Animated background blobs */}
+>>>>>>> Stashed changes
             <div className="pointer-events-none fixed inset-0 overflow-hidden">
                 <div className="absolute -top-40 -right-40 h-80 w-80 rounded-full bg-emerald-600/10 blur-[120px]" />
                 <div className="absolute -bottom-40 -left-40 h-80 w-80 rounded-full bg-teal-600/10 blur-[120px]" />

@@ -33,7 +33,11 @@ export function ChatLayout() {
     };
 
     return (
+<<<<<<< Updated upstream
         <div className="flex h-screen w-full overflow-hidden bg-slate-950">
+=======
+        <div className="flex h-full w-full overflow-hidden" style={{ backgroundColor: 'var(--bg-primary)' }}>
+>>>>>>> Stashed changes
             {/* Sidebar */}
             <aside
                 className={cn(
@@ -49,8 +53,13 @@ export function ChatLayout() {
             {/* Chat area */}
             <main
                 className={cn(
+<<<<<<< Updated upstream
                     'relative flex-1 h-full transition-all duration-300 ease-in-out',
                     isMobile && showSidebar ? 'hidden' : 'block',
+=======
+                    'relative flex-1 min-w-0 h-full overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]',
+                    isMobile && showSidebar ? 'hidden' : 'flex',
+>>>>>>> Stashed changes
                 )}
             >
                 <ChatView onBack={isMobile ? handleBack : undefined} />
