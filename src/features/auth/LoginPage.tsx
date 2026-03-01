@@ -2,7 +2,7 @@ import { useState, type FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '@/store';
 import { Button, Input, Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui';
-import { User, Lock, MessageCircle } from 'lucide-react';
+import { User, Lock, Sparkles } from 'lucide-react';
 
 export function LoginPage() {
     const navigate = useNavigate();
@@ -21,34 +21,52 @@ export function LoginPage() {
     };
 
     return (
-<<<<<<< Updated upstream
-        <div className="flex min-h-screen items-center justify-center bg-slate-950 p-4">
-            {/* Ambient background glow */}
-=======
         <div className="relative flex min-h-full items-center justify-center p-4 sm:p-6 overflow-hidden"
             style={{ backgroundColor: 'var(--bg-primary)' }}
         >
             {/* Animated background blobs */}
->>>>>>> Stashed changes
+
+        <div className="relative flex min-h-screen min-h-[100dvh] items-center justify-center p-4 sm:p-6 overflow-hidden"
+            style={{ backgroundColor: 'var(--bg-primary)' }}
+        >
+            {/* Animated background blobs */}
+
             <div className="pointer-events-none fixed inset-0 overflow-hidden">
-                <div className="absolute -top-40 -left-40 h-80 w-80 rounded-full bg-emerald-600/10 blur-[120px]" />
-                <div className="absolute -bottom-40 -right-40 h-80 w-80 rounded-full bg-teal-600/10 blur-[120px]" />
+                <div className="absolute -top-32 -left-32 h-64 w-64 sm:h-96 sm:w-96 rounded-full blur-[100px] animate-blob"
+                    style={{ backgroundColor: 'var(--blob-color-1)' }} />
+                <div className="absolute top-1/2 -right-32 h-64 w-64 sm:h-80 sm:w-80 rounded-full blur-[100px] animate-blob animation-delay-2000"
+                    style={{ backgroundColor: 'var(--blob-color-2)' }} />
+                <div className="absolute -bottom-32 left-1/3 h-64 w-64 sm:h-72 sm:w-72 rounded-full blur-[100px] animate-blob animation-delay-4000"
+                    style={{ backgroundColor: 'var(--blob-color-3)' }} />
             </div>
 
-            <Card variant="glass" className="relative w-full max-w-md border-white/[0.08] shadow-2xl shadow-black/40">
+            <Card variant="glass" className="relative w-full max-w-md shadow-2xl animate-slide-up">
                 <CardHeader className="items-center text-center pb-2">
-                    <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 shadow-lg shadow-emerald-500/25">
-                        <MessageCircle className="h-7 w-7 text-white" />
+                    <div className="mb-3 flex h-16 w-16 items-center justify-center rounded-3xl shadow-lg"
+                        style={{
+                            background: `linear-gradient(135deg, var(--accent-gradient-from), var(--accent-gradient-to))`,
+                            boxShadow: `0 8px 24px var(--active-gradient-from)`,
+                        }}
+                    >
+                        <Sparkles className="h-8 w-8 text-white" />
                     </div>
-                    <CardTitle className="text-2xl">Welcome back</CardTitle>
-                    <CardDescription>Sign in to continue chatting</CardDescription>
+                    <CardTitle>
+                        <span className="text-gradient">Welcome back</span> ✨
+                    </CardTitle>
+                    <CardDescription>Sign in to vybe with your crew</CardDescription>
                 </CardHeader>
 
                 <CardContent className="pt-4">
                     {error && (
-                        <div className="mb-4 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-300">
-                            {error}
-                            <button onClick={clearError} className="ml-2 text-red-400 hover:text-red-300 underline text-xs">
+                        <div className="mb-4 rounded-2xl px-4 py-3 text-sm animate-slide-up"
+                            style={{
+                                backgroundColor: 'var(--danger-bg)',
+                                border: `1px solid var(--danger-border)`,
+                                color: 'var(--danger-text)',
+                            }}
+                        >
+                            <span>{error}</span>
+                            <button onClick={clearError} className="ml-2 underline text-xs transition-colors opacity-80 hover:opacity-100">
                                 dismiss
                             </button>
                         </div>
@@ -56,7 +74,8 @@ export function LoginPage() {
 
                     <form onSubmit={handleSubmit} className="space-y-4">
                         <div className="space-y-1.5">
-                            <label htmlFor="login-username" className="text-xs font-medium text-white/60 uppercase tracking-wider">
+                            <label htmlFor="login-username" className="text-xs font-semibold uppercase tracking-widest"
+                                style={{ color: 'var(--text-muted)' }}>
                                 Username / Email
                             </label>
                             <Input
@@ -72,7 +91,8 @@ export function LoginPage() {
                         </div>
 
                         <div className="space-y-1.5">
-                            <label htmlFor="login-password" className="text-xs font-medium text-white/60 uppercase tracking-wider">
+                            <label htmlFor="login-password" className="text-xs font-semibold uppercase tracking-widest"
+                                style={{ color: 'var(--text-muted)' }}>
                                 Password
                             </label>
                             <Input
@@ -88,14 +108,14 @@ export function LoginPage() {
                         </div>
 
                         <Button type="submit" className="w-full" size="lg" isLoading={isLoading}>
-                            Sign In
+                            Let's Go 🚀
                         </Button>
                     </form>
 
-                    <p className="mt-6 text-center text-sm text-white/40">
-                        Don't have an account?{' '}
-                        <Link to="/register" className="font-medium text-emerald-400 hover:text-emerald-300 transition-colors">
-                            Create one
+                    <p className="mt-6 text-center text-sm" style={{ color: 'var(--text-muted)' }}>
+                        New here?{' '}
+                        <Link to="/register" className="font-semibold transition-colors" style={{ color: 'var(--accent)' }}>
+                            Create an account
                         </Link>
                     </p>
                 </CardContent>

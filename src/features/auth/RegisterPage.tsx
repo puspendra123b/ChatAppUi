@@ -2,7 +2,7 @@ import { useState, type FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '@/store';
 import { Button, Input, Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui';
-import { Mail, Lock, MessageCircle } from 'lucide-react';
+import { Mail, Lock, Sparkles } from 'lucide-react';
 
 export function RegisterPage() {
     const navigate = useNavigate();
@@ -27,7 +27,6 @@ export function RegisterPage() {
         }
 
         try {
-            // Backend signup expects { email, password }
             await register({ email, password });
             navigate('/chat');
         } catch {
@@ -38,35 +37,54 @@ export function RegisterPage() {
     const displayError = validationError || error;
 
     return (
-<<<<<<< Updated upstream
-        <div className="flex min-h-screen items-center justify-center bg-slate-950 p-4">
-=======
         <div className="relative flex min-h-full items-center justify-center p-4 sm:p-6 overflow-hidden"
             style={{ backgroundColor: 'var(--bg-primary)' }}
         >
             {/* Animated background blobs */}
->>>>>>> Stashed changes
+
+        <div className="relative flex min-h-screen min-h-[100dvh] items-center justify-center p-4 sm:p-6 overflow-hidden"
+            style={{ backgroundColor: 'var(--bg-primary)' }}
+        >
+            {/* Animated background blobs */}
+
             <div className="pointer-events-none fixed inset-0 overflow-hidden">
-                <div className="absolute -top-40 -right-40 h-80 w-80 rounded-full bg-emerald-600/10 blur-[120px]" />
-                <div className="absolute -bottom-40 -left-40 h-80 w-80 rounded-full bg-teal-600/10 blur-[120px]" />
+                <div className="absolute -top-32 -right-32 h-64 w-64 sm:h-96 sm:w-96 rounded-full blur-[100px] animate-blob"
+                    style={{ backgroundColor: 'var(--blob-color-2)' }} />
+                <div className="absolute top-1/2 -left-32 h-64 w-64 sm:h-80 sm:w-80 rounded-full blur-[100px] animate-blob animation-delay-2000"
+                    style={{ backgroundColor: 'var(--blob-color-1)' }} />
+                <div className="absolute -bottom-32 right-1/3 h-64 w-64 sm:h-72 sm:w-72 rounded-full blur-[100px] animate-blob animation-delay-4000"
+                    style={{ backgroundColor: 'var(--blob-color-3)' }} />
             </div>
 
-            <Card variant="glass" className="relative w-full max-w-md border-white/[0.08] shadow-2xl shadow-black/40">
+            <Card variant="glass" className="relative w-full max-w-md shadow-2xl animate-slide-up">
                 <CardHeader className="items-center text-center pb-2">
-                    <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 shadow-lg shadow-emerald-500/25">
-                        <MessageCircle className="h-7 w-7 text-white" />
+                    <div className="mb-3 flex h-16 w-16 items-center justify-center rounded-3xl shadow-lg"
+                        style={{
+                            background: `linear-gradient(135deg, var(--accent-gradient-to), var(--accent-gradient-from))`,
+                            boxShadow: `0 8px 24px var(--active-gradient-from)`,
+                        }}
+                    >
+                        <Sparkles className="h-8 w-8 text-white" />
                     </div>
-                    <CardTitle className="text-2xl">Create account</CardTitle>
-                    <CardDescription>Start your messaging journey</CardDescription>
+                    <CardTitle>
+                        <span className="text-gradient">Join the vybe</span> 🎉
+                    </CardTitle>
+                    <CardDescription>Create your account and start chatting</CardDescription>
                 </CardHeader>
 
                 <CardContent className="pt-4">
                     {displayError && (
-                        <div className="mb-4 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-300">
-                            {displayError}
+                        <div className="mb-4 rounded-2xl px-4 py-3 text-sm animate-slide-up"
+                            style={{
+                                backgroundColor: 'var(--danger-bg)',
+                                border: `1px solid var(--danger-border)`,
+                                color: 'var(--danger-text)',
+                            }}
+                        >
+                            <span>{displayError}</span>
                             <button
                                 onClick={() => { setValidationError(''); clearError(); }}
-                                className="ml-2 text-red-400 hover:text-red-300 underline text-xs"
+                                className="ml-2 underline text-xs transition-colors opacity-80 hover:opacity-100"
                             >
                                 dismiss
                             </button>
@@ -75,7 +93,8 @@ export function RegisterPage() {
 
                     <form onSubmit={handleSubmit} className="space-y-4">
                         <div className="space-y-1.5">
-                            <label htmlFor="reg-email" className="text-xs font-medium text-white/60 uppercase tracking-wider">
+                            <label htmlFor="reg-email" className="text-xs font-semibold uppercase tracking-widest"
+                                style={{ color: 'var(--text-muted)' }}>
                                 Email
                             </label>
                             <Input
@@ -91,7 +110,8 @@ export function RegisterPage() {
                         </div>
 
                         <div className="space-y-1.5">
-                            <label htmlFor="reg-password" className="text-xs font-medium text-white/60 uppercase tracking-wider">
+                            <label htmlFor="reg-password" className="text-xs font-semibold uppercase tracking-widest"
+                                style={{ color: 'var(--text-muted)' }}>
                                 Password
                             </label>
                             <Input
@@ -108,7 +128,8 @@ export function RegisterPage() {
                         </div>
 
                         <div className="space-y-1.5">
-                            <label htmlFor="reg-confirm" className="text-xs font-medium text-white/60 uppercase tracking-wider">
+                            <label htmlFor="reg-confirm" className="text-xs font-semibold uppercase tracking-widest"
+                                style={{ color: 'var(--text-muted)' }}>
                                 Confirm Password
                             </label>
                             <Input
@@ -125,13 +146,13 @@ export function RegisterPage() {
                         </div>
 
                         <Button type="submit" className="w-full" size="lg" isLoading={isLoading}>
-                            Create Account
+                            Let's Goo 🎯
                         </Button>
                     </form>
 
-                    <p className="mt-6 text-center text-sm text-white/40">
+                    <p className="mt-6 text-center text-sm" style={{ color: 'var(--text-muted)' }}>
                         Already have an account?{' '}
-                        <Link to="/login" className="font-medium text-emerald-400 hover:text-emerald-300 transition-colors">
+                        <Link to="/login" className="font-semibold transition-colors" style={{ color: 'var(--accent)' }}>
                             Sign in
                         </Link>
                     </p>

@@ -1,6 +1,8 @@
 import { create } from 'zustand';
+import axios from 'axios';
 import type { User, LoginCredentials, RegisterCredentials, ApiResponse } from '@/types';
 import { apiClient, tokenStore } from '@/services/api';
+import { config } from '@/config';
 import { wsService } from '@/services/websocket';
 
 interface AuthTokensResponse {
@@ -108,6 +110,13 @@ export const useAuthStore = create<AuthState>((set) => ({
         set({ user: null, isAuthenticated: false, error: null });
     },
 
+    /**
+     * Sticky session initialisation:
+     * 1. Check if a refresh token exists in localStorage
+     * 2. Call /auth/refresh to get a fresh access token
+     * 3. Use the new access token to fetch the user profile
+     * 4. If refresh fails → clear tokens and stay logged out
+     */
     initialise: async () => {
         const refreshToken = tokenStore.getRefreshToken();
         if (!refreshToken) {
@@ -116,10 +125,25 @@ export const useAuthStore = create<AuthState>((set) => ({
         }
 
         try {
+            // Step 1: Use the refresh token to get a fresh access token
+            // Use raw axios (not apiClient) to avoid interceptor triggering
+            const { data: refreshRes } = await axios.post(
+                `${config.api.baseUrl}/auth/refresh`,
+                { refreshToken },
+            );
+
+            const newAccessToken = refreshRes.data.accessToken as string;
+            const newRefreshToken = refreshRes.data.refreshToken as string;
+
+            tokenStore.setAccessToken(newAccessToken);
+            tokenStore.setRefreshToken(newRefreshToken);
+
+            // Step 2: Fetch the user profile with the fresh access token
             const { data: meRes } = await apiClient.get<ApiResponse<{ user: User }>>('/user/me');
             set({ user: meRes.data.user, isAuthenticated: true, isInitialising: false });
             wsService.connect();
         } catch {
+            // Refresh failed — token is expired or invalid, clear everything
             tokenStore.clearAll();
             set({ isInitialising: false });
         }

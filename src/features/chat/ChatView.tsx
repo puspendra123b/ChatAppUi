@@ -6,7 +6,7 @@ import { MessageSkeleton } from '@/components/ui/Skeleton';
 import { MessageBubble } from './MessageBubble';
 import { TypingIndicator } from './TypingIndicator';
 import { MessageInput } from './MessageInput';
-import { ArrowLeft, Phone, Video, MoreVertical, ChevronDown } from 'lucide-react';
+import { ArrowLeft, Phone, Video, MoreVertical, ChevronDown, Sparkles } from 'lucide-react';
 import { cn } from '@/utils/cn';
 import { formatLastSeen } from '@/utils/format';
 
@@ -27,7 +27,6 @@ export function ChatView({ onBack }: ChatViewProps) {
     isUserOnline,
   } = useChatStore();
 
-  // Find active chat and the other participant
   const activeChat = useMemo(
     () => chats.find((c) => c._id === activeChatId),
     [chats, activeChatId],
@@ -38,19 +37,13 @@ export function ChatView({ onBack }: ChatViewProps) {
     [activeChat, user],
   );
 
-  // Real-time online status (from WS events)
   const otherOnline = otherUser ? isUserOnline(otherUser._id) || otherUser.isOnline : false;
-
-  // Typing state for this chat
   const isOtherTyping = activeChatId ? typingUsers[activeChatId] != null : false;
-
   const chatMessages = activeChatId ? messages[activeChatId] || [] : [];
 
-  // Auto scroll
   const { scrollRef, scrollToBottom, handleScroll, isUserScrolledUp } =
     useAutoScroll(chatMessages.length);
 
-  // Typing indicator hook
   const { startTyping, stopTyping } = useTypingIndicator(
     useCallback(
       (isTyping: boolean) => {
@@ -60,7 +53,6 @@ export function ChatView({ onBack }: ChatViewProps) {
     ),
   );
 
-  // Determine if a message was sent by the current user
   const isSelfMessage = useCallback(
     (msg: { senderId: string | { _id: string } }) => {
       if (!user) return false;
@@ -73,52 +65,58 @@ export function ChatView({ onBack }: ChatViewProps) {
   const handleSend = (content: string) => {
     if (!activeChatId) return;
     sendMessage(activeChatId, content);
-    stopTyping(); // Stop typing when we send
+    stopTyping();
   };
 
-  // Build status line for header
   const getStatusLine = (): string => {
     if (isOtherTyping) return 'typing...';
-    if (otherOnline) return 'Online';
+    if (otherOnline) return 'Online now';
     if (otherUser?.lastSeen) return formatLastSeen(otherUser.lastSeen);
     return 'Offline';
   };
 
-  // No conversation selected state
+  // No conversation selected
   if (!activeChatId || !activeChat) {
     return (
-      <div className="flex h-full flex-col items-center justify-center bg-slate-950 text-center p-8">
-        <div className="space-y-4">
-          <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-3xl bg-gradient-to-br from-emerald-500/20 to-teal-500/20 border border-emerald-500/10">
-            <svg className="h-10 w-10 text-emerald-400/60" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-            </svg>
+      <div className="flex h-full w-full flex-col items-center justify-center text-center p-8"
+        style={{ backgroundColor: 'var(--bg-primary)' }}
+      >
+        <div className="space-y-5 animate-slide-up max-w-xs">
+          <div className="relative mx-auto">
+            <div className="h-24 w-24 rounded-[2rem] flex items-center justify-center"
+              style={{
+                background: `linear-gradient(135deg, var(--active-gradient-from), var(--active-gradient-to))`,
+                border: `1px solid var(--active-border)`,
+              }}
+            >
+              <Sparkles className="h-10 w-10" style={{ color: 'var(--accent)', opacity: 0.5 }} />
+            </div>
+            <div className="absolute -inset-4 rounded-full blur-2xl"
+              style={{ background: `linear-gradient(135deg, var(--active-gradient-from), var(--active-gradient-to))` }} />
           </div>
-          <h2 className="text-xl font-semibold text-white/80">Your messages</h2>
-          <p className="text-sm text-white/40 max-w-xs">
-            Select a conversation or search for a user to start chatting.
-          </p>
+          <div>
+            <h2 className="text-xl font-bold" style={{ color: 'var(--text-secondary)' }}>Pick a chat</h2>
+            <p className="text-sm mt-1" style={{ color: 'var(--text-muted)' }}>
+              Select a conversation or find someone new to vybe with ✨
+            </p>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-<<<<<<< Updated upstream
-    <div className="flex h-full flex-col bg-slate-950">
-      {/* ── Chat Header ────────────────────────────────── */}
-      <header className="flex items-center gap-3 border-b border-white/[0.06] bg-slate-900/80 backdrop-blur-lg px-4 py-3 shrink-0">
-=======
     <div className="flex h-full w-full min-w-0 flex-col overflow-hidden" style={{ backgroundColor: 'var(--bg-primary)' }}>
+    <div className="flex h-full w-full flex-col" style={{ backgroundColor: 'var(--bg-primary)' }}>
       {/* ── Chat Header ─────────────────────────────── */}
       <header className="flex items-center gap-3 glass-strong px-4 py-3 shrink-0"
         style={{ paddingTop: 'calc(var(--safe-area-top) + 0.75rem)' }}
       >
->>>>>>> Stashed changes
         {onBack && (
           <button
             onClick={onBack}
-            className="mr-1 flex h-8 w-8 items-center justify-center rounded-lg text-white/60 hover:text-white hover:bg-white/10 transition-all md:hidden"
+            className="mr-0.5 flex h-9 w-9 items-center justify-center rounded-xl transition-all active:scale-95"
+            style={{ color: 'var(--text-secondary)' }}
           >
             <ArrowLeft className="h-5 w-5" />
           </button>
@@ -132,94 +130,82 @@ export function ChatView({ onBack }: ChatViewProps) {
         />
 
         <div className="flex-1 min-w-0">
-          <h2 className="text-sm font-semibold text-white truncate">
+          <h2 className="text-sm font-bold truncate" style={{ color: 'var(--text-primary)' }}>
             {otherUser?.email || 'Unknown'}
           </h2>
-          <p className={cn(
-            'text-xs transition-colors duration-300',
-            isOtherTyping
-              ? 'text-emerald-400'
-              : otherOnline
-                ? 'text-emerald-400/60'
-                : 'text-white/40',
-          )}>
+          <p className="text-xs font-medium transition-colors duration-300"
+            style={{
+              color: isOtherTyping
+                ? 'var(--typing-color)'
+                : otherOnline
+                  ? 'var(--online-color)'
+                  : 'var(--text-muted)',
+            }}>
             {getStatusLine()}
           </p>
         </div>
 
-        <div className="flex items-center gap-1">
-          <button className="flex h-9 w-9 items-center justify-center rounded-xl text-white/40 hover:text-white hover:bg-white/10 transition-all">
-            <Phone className="h-4 w-4" />
-          </button>
-          <button className="flex h-9 w-9 items-center justify-center rounded-xl text-white/40 hover:text-white hover:bg-white/10 transition-all">
-            <Video className="h-4 w-4" />
-          </button>
-          <button className="flex h-9 w-9 items-center justify-center rounded-xl text-white/40 hover:text-white hover:bg-white/10 transition-all">
-            <MoreVertical className="h-4 w-4" />
-          </button>
+        <div className="flex items-center gap-0.5">
+          {[Phone, Video, MoreVertical].map((Icon, i) => (
+            <button key={i} className="flex h-9 w-9 items-center justify-center rounded-xl transition-all active:scale-95"
+              style={{ color: 'var(--text-muted)' }}>
+              <Icon className="h-4 w-4" />
+            </button>
+          ))}
         </div>
       </header>
 
-      {/* ── Messages Area ──────────────────────────────── */}
+      {/* ── Messages ────────────────────────────────── */}
       <div
         ref={scrollRef}
         onScroll={handleScroll}
-<<<<<<< Updated upstream
-        className="flex-1 overflow-y-auto py-4 scrollbar-thin"
-        style={{
-          backgroundImage: `
-            radial-gradient(circle at 20% 80%, rgba(16, 185, 129, 0.03) 0%, transparent 50%),
-            radial-gradient(circle at 80% 20%, rgba(20, 184, 166, 0.03) 0%, transparent 50%)
-          `,
-        }}
-=======
         className="flex-1 overflow-y-auto overflow-x-hidden py-4 scrollbar-thin"
->>>>>>> Stashed changes
+
       >
         {isLoadingMessages ? (
-          <div className="space-y-3">
+          <div className="space-y-3 px-2">
             {Array.from({ length: 6 }).map((_, i) => (
               <MessageSkeleton key={i} />
             ))}
           </div>
         ) : chatMessages.length === 0 ? (
           <div className="flex h-full items-center justify-center">
-            <div className="text-center space-y-2">
-              <p className="text-sm text-white/30">No messages yet</p>
-              <p className="text-xs text-white/20">Say hello! 👋</p>
+            <div className="text-center space-y-2 animate-fade-in">
+              <p className="text-3xl">👋</p>
+              <p className="text-sm font-medium" style={{ color: 'var(--text-muted)' }}>No messages yet</p>
+              <p className="text-xs" style={{ color: 'var(--text-muted)', opacity: 0.6 }}>Break the ice!</p>
             </div>
           </div>
         ) : (
           <div className="space-y-0.5">
             {chatMessages.map((msg) => (
-              <MessageBubble
-                key={msg._id}
-                message={msg}
-                isSelf={isSelfMessage(msg)}
-              />
+              <MessageBubble key={msg._id} message={msg} isSelf={isSelfMessage(msg)} />
             ))}
           </div>
         )}
 
-        {/* Typing indicator inside the messages area */}
         {isOtherTyping && (
           <TypingIndicator username={otherUser?.email} />
         )}
       </div>
 
-      {/* Scroll to bottom FAB */}
+      {/* Scroll-to-bottom FAB */}
       {isUserScrolledUp && (
-        <div className="absolute bottom-20 right-6">
+        <div className="absolute bottom-24 right-4 sm:right-6 z-10">
           <button
             onClick={() => scrollToBottom()}
-            className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-800 border border-white/10 text-white/60 hover:text-white shadow-xl transition-all hover:scale-105"
+            className="flex h-10 w-10 items-center justify-center rounded-full text-white shadow-lg transition-all hover:scale-110 active:scale-95"
+            style={{
+              background: `linear-gradient(135deg, var(--accent-gradient-from), var(--accent-gradient-to))`,
+              boxShadow: `0 4px 14px var(--active-gradient-from)`,
+            }}
           >
             <ChevronDown className="h-5 w-5" />
           </button>
         </div>
       )}
 
-      {/* ── Message Input ──────────────────────────────── */}
+      {/* ── Message Input ────────────────────────────── */}
       <MessageInput
         onSend={handleSend}
         onTyping={startTyping}
